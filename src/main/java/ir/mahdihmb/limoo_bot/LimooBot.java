@@ -29,8 +29,10 @@ public class LimooBot {
         limooDriver.addEventListener(new MessageCreatedEventListener() {
             @Override
             public void onNewMessage(Message message, Conversation conversation) {
-                HibernateSessionManager.openSession();
+                System.out.println(message.getText());
+
                 try {
+                    HibernateSessionManager.openSession();
                     if (message.getThreadRootId() == null) {
                         List<Test> tests = TestDAO.getInstance().list();
                         if (tests == null || tests.isEmpty()) {
