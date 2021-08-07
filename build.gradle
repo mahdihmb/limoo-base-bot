@@ -1,0 +1,78 @@
+plugins {
+    id 'application'
+}
+apply plugin : 'java'
+
+repositories {
+    flatDir {
+        dirs 'lib'
+    }
+    mavenCentral()
+}
+
+dependencies {
+    // Limoo driver
+    implementation name: 'limoo-java-driver', version: '2.0.1'
+
+    // OkHttp client
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.1'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp-urlconnection', version: '4.9.1'
+
+    // Atmosphere
+    implementation group: 'org.atmosphere', name: 'wasync', version: '2.1.7'
+
+    // Jackson
+    implementation group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.12.4'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.4'
+
+    // log4j
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+    implementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.31'
+
+    // Apache
+    implementation group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.8.0'
+    implementation group: 'org.apache.commons', name: 'commons-configuration2', version: '2.7'
+    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
+
+    // postgresql
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
+
+    // hibernate
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.5.3.Final'
+
+    // flyway
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.11.0'
+}
+
+application {
+    mainClassName = "ir.mahdihmb.limoo_bot.Main"
+}
+
+task runBot(type: JavaExec) {
+    group = "limoo-base-bot"
+    description = "Run bot"
+    classpath = sourceSets.main.runtimeClasspath
+    main = "ir.mahdihmb.limoo_bot.Main"
+}
+
+task resetAndInitDB(type: JavaExec) {
+    group = "limoo-base-bot"
+    description = "Clear db and initialize it"
+    classpath = sourceSets.main.runtimeClasspath
+    main = "ir.mahdihmb.limoo_bot.core.Migrate_ResetAndInit"
+}
+
+jar  {
+    baseName = "${rootProject.name}"
+
+    from configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+
+    def revision = 'git rev-parse HEAD'.execute().text.trim()
+    def date = new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+    manifest {
+        attributes 'Main-Class': 'ir.mahdihmb.limoo_bot.Main',
+                'Implementation-Title': 'Limoo file bot',
+                "Date": date,
+                "Git-Revision": revision
+    }
+}
