@@ -49,14 +49,14 @@ application {
 }
 
 task runBot(type: JavaExec) {
-    group = "limoo-base-bot"
+    group = "limoo-bot"
     description = "Run bot"
     classpath = sourceSets.main.runtimeClasspath
     main = "ir.mahdihmb.limoo_bot.Main"
 }
 
 task resetAndInitDB(type: JavaExec) {
-    group = "limoo-base-bot"
+    group = "limoo-bot"
     description = "Clear db and initialize it"
     classpath = sourceSets.main.runtimeClasspath
     main = "ir.mahdihmb.limoo_bot.core.Migrate_ResetAndInit"

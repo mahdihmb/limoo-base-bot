@@ -11,6 +11,7 @@ public class Main {
     private static final transient Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws LimooException {
+        logger.info("--------------- Starting bot ---------------");
         CoreManager.initApp();
 
         String limooUrl = ConfigService.get("bot.limooUrl");
@@ -18,6 +19,6 @@ public class Main {
         String botPassword = ConfigService.get("bot.password");
         new LimooBot(limooUrl, botUsername, botPassword).run();
 
-        logger.info("Bot started!");
+        logger.info("--------------- Bot started! ---------------");
     }
 }
