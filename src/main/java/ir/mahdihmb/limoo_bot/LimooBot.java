@@ -3,7 +3,7 @@ package ir.mahdihmb.limoo_bot;
 import ir.limoo.driver.LimooDriver;
 import ir.limoo.driver.entity.Conversation;
 import ir.limoo.driver.entity.Message;
-import ir.limoo.driver.event.AddToConversationEventListener;
+import ir.limoo.driver.event.AddedToConversationEventListener;
 import ir.limoo.driver.event.MessageCreatedEventListener;
 import ir.limoo.driver.exception.LimooException;
 import ir.mahdihmb.limoo_bot.core.HibernateSessionManager;
@@ -54,7 +54,7 @@ public class LimooBot {
             }
         });
 
-        limooDriver.addEventListener(new AddToConversationEventListener() {
+        limooDriver.addEventListener(new AddedToConversationEventListener() {
             @Override
             public void onAddToConversation(Conversation conversation) {
                 // do something
