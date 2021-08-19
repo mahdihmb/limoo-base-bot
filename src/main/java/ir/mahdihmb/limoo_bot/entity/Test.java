@@ -1,8 +1,10 @@
 package ir.mahdihmb.limoo_bot.entity;
 
-public class Test {
+import java.io.Serializable;
 
-    private long id;
+public class Test implements IdProvider {
+
+    private Serializable id;
     private String strField;
     private Integer intField;
 
@@ -15,11 +17,13 @@ public class Test {
         this.intField = intField;
     }
 
-    public long getId() {
+    @Override
+    public Serializable getId() {
         return id;
     }
 
-    public void setId(long id) {
+    @Override
+    public void setId(Serializable id) {
         this.id = id;
     }
 

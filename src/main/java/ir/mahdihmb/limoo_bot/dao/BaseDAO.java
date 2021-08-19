@@ -1,7 +1,7 @@
 package ir.mahdihmb.limoo_bot.dao;
 
 import ir.mahdihmb.limoo_bot.core.HibernateSessionManager;
-import org.hibernate.HibernateException;
+import ir.mahdihmb.limoo_bot.entity.IdProvider;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
@@ -12,9 +12,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
 import java.util.List;
-import java.util.function.Function;
 
-public class BaseDAO<T> {
+public class BaseDAO<T extends IdProvider> {
 
     private static final transient Logger logger = LoggerFactory.getLogger(BaseDAO.class);
 
@@ -24,20 +23,20 @@ public class BaseDAO<T> {
         this.persistentClass = persistentClass;
     }
 
-    protected Object doTransaction(Function<Session, ?> action) {
+    protected Object doTransaction(CheckedFunction<Session, ?> action) {
         Session session = HibernateSessionManager.getCurrentSession();
         Transaction tx = null;
-        Object result = null;
         try {
             tx = session.beginTransaction();
-            result = action.apply(session);
+            Object result = action.apply(session);
             tx.commit();
-        } catch (HibernateException e) {
+            return result;
+        } catch (Throwable e) {
+            logger.error("", e);
             if (tx != null)
                 tx.rollback();
-            logger.error("", e);
+            throw new RuntimeException(e);
         }
-        return result;
     }
 
     public Serializable add(T entity) {
@@ -72,5 +71,24 @@ public class BaseDAO<T> {
             criteriaQuery.select(root);
             return session.createQuery(criteriaQuery).list();
         });
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public T getOrCreate(Serializable id) {
+        return (T) doTransaction((session) -> {
+            final T existingEntity = session.get(persistentClass, id);
+            if (existingEntity != null)
+                return existingEntity;
+
+            T newEntity = persistentClass.newInstance();
+            newEntity.setId(id);
+            final Serializable newId = session.save(newEntity);
+            return session.get(persistentClass, newId);
+        });
+    }
+
+    @FunctionalInterface
+    private interface CheckedFunction<T, R> {
+        R apply(T t) throws Throwable;
     }
 }
