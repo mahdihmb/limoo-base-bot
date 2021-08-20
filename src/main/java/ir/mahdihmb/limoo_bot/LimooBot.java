@@ -45,7 +45,7 @@ public class LimooBot {
                             message.sendInThread(test.getStrField());
                         }
                     }
-                } catch (LimooException e) {
+                } catch (Throwable e) {
                     logger.error("", e);
                 } finally {
                     HibernateSessionManager.closeCurrentSession();
